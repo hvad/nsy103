@@ -15,6 +15,7 @@ int main()
 {
   int namelen, sock, nsock;
   char buf[20];
+  char a;
   struct sockaddr_in adr_s, adr_c;
   int lg, n;
   pid_t pid;
@@ -24,14 +25,14 @@ int main()
   if ((sock = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
   {
     perror("socket");
-    exit(2);
+    exit(errno);
   }
 
   /* Attachement socket */
 
   adr_s.sin_family = AF_INET;
   adr_s.sin_port = htons(PORTS); /* passage au format réseau */
-  adr_s.sin_addr.s_addr = INADDR_ANY; /* n'importe quelle adresse IP de la machine locale */
+  adr_s.sin_addr.s_addr = htonl(INADDR_ANY); /* n'importe quelle adresse IP de la machine locale */
 
   if(bind(sock, (struct sockaddr*) &adr_s, sizeof(adr_s)) < 0)
   {
@@ -56,7 +57,8 @@ int main()
     if (pid == 0)
     {
       close (sock);
-      read (nsock, buf, 20);
+      n = read (nsock, buf, 20);
+      printf("affiche %d", n);
       close (nsock);
       exit(0);
     }
